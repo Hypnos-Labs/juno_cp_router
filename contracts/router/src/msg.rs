@@ -6,6 +6,6 @@ pub struct InstantiateMsg {}
 
 #[cw_serde]
 pub enum ExecuteMsg {
-    Route,
-    RouteWithSender
+    Route {},
+    RouteWithSender {}
 }

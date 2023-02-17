@@ -1,8 +1,10 @@
 # Juno community pool router
 
-**CURRENTLY ONLY USED FOR TESTING, DO NOT EXPECT THIS TO WORK PROPERLY**
+**CURRENTLY USED FOR TESTING**
 
-Testing contract used for sending funds to Juno community pool since theres no way to test Stargate messages currently
+Credit to Pupmos for the slick protobuf implementation
 
-All native tokens sent via `ExecuteMsg::route` are (potentially) routed to Juno community pool
+Used to test CP funding since no way to test stargate messages yet
+
+Native tokens sent via `ExecuteMsg::Route / RouteWithSender` are routed to Juno community pool
 

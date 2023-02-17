@@ -47,10 +47,10 @@ pub fn execute(
     msg: ExecuteMsg,
 ) -> Result<Response, ContractError> {
     match msg {
-        ExecuteMsg::Route => {
+        ExecuteMsg::Route {} => {
             route(env, info)
         }
-        ExecuteMsg::RouteWithSender => {
+        ExecuteMsg::RouteWithSender {} => {
             route_with_sender(info)
         }
     }
