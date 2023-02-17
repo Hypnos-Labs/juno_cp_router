@@ -64,7 +64,7 @@ pub fn route(env: Env, info: MessageInfo) -> Result<Response, ContractError> {
         attr.push(format!(
             "{}: {}",
             coin.denom.clone(),
-            coin.amount.to_string()
+            coin.amount
         ));
         let msg = coin.get_cp_msg(&env.contract.address)?;
         msgs.push(msg);
@@ -91,7 +91,7 @@ pub fn route_with_sender(info: MessageInfo) -> Result<Response, ContractError> {
         attr.push(format!(
             "{}: {}",
             coin.denom.clone(),
-            coin.amount.to_string()
+            coin.amount
         ));
         let msg = coin.get_cp_msg(&info.sender)?;
         msgs.push(msg);
