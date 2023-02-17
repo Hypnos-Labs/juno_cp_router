@@ -1,16 +1,15 @@
-
+use cosmos_sdk_proto::cosmos::base::v1beta1::Coin as SdkCoin;
+use cosmos_sdk_proto::cosmos::distribution::v1beta1::MsgFundCommunityPool;
 #[cfg(not(feature = "library"))]
 pub use cosmwasm_std::{
-    coin, from_binary, has_coins, to_binary, entry_point, Coin, StdError, Addr, Binary, CosmosMsg, Deps, DepsMut, Empty,
-    Env, MessageInfo, Order, QueryRequest, Reply, ReplyOn, Response, StdResult, SubMsg,
-    Uint128, WasmMsg, WasmQuery,
+    coin, entry_point, from_binary, has_coins, to_binary, Addr, Binary, Coin, CosmosMsg, Deps,
+    DepsMut, Empty, Env, MessageInfo, Order, QueryRequest, Reply, ReplyOn, Response, StdError,
+    StdResult, SubMsg, Uint128, WasmMsg, WasmQuery,
 };
-use cosmos_sdk_proto::cosmos::distribution::v1beta1::MsgFundCommunityPool;
-use cosmos_sdk_proto::cosmos::base::v1beta1::Coin as SdkCoin;
 
-pub use cw2::set_contract_version;
 pub use crate::error::*;
 pub use crate::msg::*;
+pub use cw2::set_contract_version;
 
 const CONTRACT_NAME: &str = "crates.io:cp_router";
 const CONTRACT_VERSION: &str = env!("CARGO_PKG_VERSION");
@@ -29,9 +28,7 @@ pub fn instantiate(
 ) -> Result<Response, ContractError> {
     set_contract_version(deps.storage, CONTRACT_NAME, CONTRACT_VERSION)?;
 
-    Ok(Response::new()
-        .add_attribute("method", "instantiate")
-    )
+    Ok(Response::new().add_attribute("method", "instantiate"))
 }
 
 //////~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -47,22 +44,16 @@ pub fn execute(
     msg: ExecuteMsg,
 ) -> Result<Response, ContractError> {
     match msg {
-        ExecuteMsg::Route {} => {
-            route(env, info)
-        }
-        ExecuteMsg::RouteWithSender {} => {
-            route_with_sender(info)
-        }
+        ExecuteMsg::Route {} => route(env, info),
+        ExecuteMsg::RouteWithSender {} => route_with_sender(info),
     }
 }
 
-pub fn route(
-    env: Env,
-    info: MessageInfo
-) -> Result<Response, ContractError> {
-
+pub fn route(env: Env, info: MessageInfo) -> Result<Response, ContractError> {
     if info.funds.is_empty() {
-        return Err(ContractError::GenericError("Msg: Route | Error: funds.is_empty".to_string()));
+        return Err(ContractError::GenericError(
+            "Msg: Route | Error: funds.is_empty".to_string(),
+        ));
     }
 
     let mut msgs: Vec<CosmosMsg> = vec![];
@@ -70,7 +61,11 @@ pub fn route(
     let mut attr: Vec<String> = vec![];
 
     for coin in info.funds {
-        attr.push(format!("{}: {}", coin.denom.clone(), coin.amount.to_string()));
+        attr.push(format!(
+            "{}: {}",
+            coin.denom.clone(),
+            coin.amount.to_string()
+        ));
         let msg = coin.get_cp_msg(&env.contract.address)?;
         msgs.push(msg);
     }
@@ -78,15 +73,14 @@ pub fn route(
     Ok(Response::new()
         .add_attribute("funds sent ||| ", attr.join(" | "))
         .add_attribute("from address: ", env.contract.address.to_string())
-        .add_messages(msgs)
-    )
+        .add_messages(msgs))
 }
 
-pub fn route_with_sender(
-    info: MessageInfo,
-) -> Result<Response, ContractError> {
+pub fn route_with_sender(info: MessageInfo) -> Result<Response, ContractError> {
     if info.funds.is_empty() {
-        return Err(ContractError::GenericError("Msg: RouteWithSender | Error: funds.is_empty".to_string()));
+        return Err(ContractError::GenericError(
+            "Msg: RouteWithSender | Error: funds.is_empty".to_string(),
+        ));
     }
 
     let mut msgs: Vec<CosmosMsg> = vec![];
@@ -94,7 +88,11 @@ pub fn route_with_sender(
     let mut attr: Vec<String> = vec![];
 
     for coin in info.funds {
-        attr.push(format!("{}: {}", coin.denom.clone(), coin.amount.to_string()));
+        attr.push(format!(
+            "{}: {}",
+            coin.denom.clone(),
+            coin.amount.to_string()
+        ));
         let msg = coin.get_cp_msg(&info.sender)?;
         msgs.push(msg);
     }
@@ -102,10 +100,8 @@ pub fn route_with_sender(
     Ok(Response::new()
         .add_attribute("funds sent ||| ", attr.join(" | "))
         .add_attribute("from address: ", info.sender.to_string())
-        .add_messages(msgs)
-    )
+        .add_messages(msgs))
 }
-
 
 pub trait GetComPoolMsg {
     fn get_cp_msg(&self, depositor: &Addr) -> Result<CosmosMsg, ContractError>;
